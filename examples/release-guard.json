@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "name": "Synthetic release-guard context loss",
+  "before": [
+    {"id": "instructions", "text": "Read release policy configuration. Unspecified boolean flags default to false."},
+    {"id": "ci-gate", "text": "release.require_ci = true"},
+    {"id": "approval-gate", "text": "release.require_approval = true"},
+    {"id": "release-note", "text": "release.note = 'Use a friendly release title.'"}
+  ],
+  "after": "Read release policy configuration. Unspecified boolean flags default to false.",
+  "task": "Return only JSON with the boolean fields require_ci and require_approval from the release policy.",
+  "evaluator": {
+    "type": "json",
+    "expected": {"require_ci": true, "require_approval": true}
+  }
+}
