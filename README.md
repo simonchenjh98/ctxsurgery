@@ -18,6 +18,12 @@ before succeeds → after fails → restore missing fragments → compare filler
 
 No dashboard service, database or runtime dependencies. Not a context compressor or a new agent framework.
 
+## Alpha status and next milestone
+
+The software pipeline is tested; diagnostic effectiveness on real model failures is **not yet established**. The bundled demo is synthetic, and the optional archived example is a static comparison, not a demonstrated causal repair.
+
+The next milestone is one shareable, sanitized real failure case: reproduce the regression, compare original/compacted/restored/filler conditions with explicit assertions, and provide a procedure another developer can rerun. A negative or inconclusive outcome must be reported as such. More features, trace integrations, and broader model claims come after that evidence.
+
 ## Try it in one minute
 
 Clone the repository and run the offline demo:
