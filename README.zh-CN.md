@@ -10,9 +10,11 @@ Agent 在压缩、摘要或重写上下文前能完成任务，之后失败了�
 
 ## 一分钟运行
 
-在项目目录中执行：
+克隆仓库并运行离线演示：
 
 ```sh
+git clone https://github.com/simonchenjh98/ctxsurgery.git
+cd ctxsurgery
 python -m pip install -e .
 ctxsurgery demo --out artifacts/demo
 ```

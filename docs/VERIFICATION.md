@@ -34,3 +34,7 @@ The public import command performs a network download; the tests and demo do not
 - GitHub/PyPI publication, package-name availability, or distribution/usage metrics.
 
 Generated reports, public downloads, test temporary directories, built artifacts and the virtual environment are ignored by Git. Private cases were not imported.
+
+## Publication preflight — 2026-10-21
+
+The full local suite was rerun before publication: **159 passed in 2.94 seconds**. This run required permission to reach the local HTTP test server outside the agent sandbox; it made no real model calls. The September results above are retained as a dated historical record. Publication and remote CI status should be checked on the linked GitHub repository, not inferred from the old verification date.

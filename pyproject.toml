@@ -17,6 +17,10 @@ classifiers = [
 ]
 dependencies = []
 
+[project.urls]
+Repository = "https://github.com/simonchenjh98/ctxsurgery"
+Issues = "https://github.com/simonchenjh98/ctxsurgery/issues"
+
 [project.optional-dependencies]
 dev = ["pytest>=8", "build>=1"]
 

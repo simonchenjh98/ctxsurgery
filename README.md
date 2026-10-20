@@ -20,9 +20,11 @@ No dashboard service, database or runtime dependencies. Not a context compressor
 
 ## Try it in one minute
 
-From a checkout of this repository:
+Clone the repository and run the offline demo:
 
 ```sh
+git clone https://github.com/simonchenjh98/ctxsurgery.git
+cd ctxsurgery
 python -m pip install -e .
 ctxsurgery demo --out artifacts/demo
 ```
