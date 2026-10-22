@@ -1,0 +1,40 @@
+{
+  "kind": "authored_engineering_task_with_live_model_observations",
+  "production_incident": false,
+  "model": "step-5-preview",
+  "base_url": "https://api.stepfun.com/step_plan/v1",
+  "max_calls": 18,
+  "repeats": 3,
+  "temperature": 0,
+  "status": "already_passing",
+  "calls_used": 6,
+  "max_output_tokens": 16384,
+  "timeout_seconds": 120.0,
+  "reasoning_effort": "low",
+  "summary_mode": "frozen_existing_summary",
+  "source_case_sha256": "e7aef9b4fa526a044343f47d2a441f4b9d374a2004917637d442f0a0a7d983c4",
+  "implementation_sha256": {
+    "scripts/run_live_case.py": "4e6c45256d16aa647ffe02e6922ccf8145ae2d20bba96abc92bb2de2e58a13ba",
+    "src/ctxsurgery/engine.py": "5fa80fc32012a59ab8ec721f0e867b82f4f5ca2d75a29472851f976a3f160d63",
+    "src/ctxsurgery/fragments.py": "11037734cf4b941c70d54b05891e7460e7882669e3c81736a71ef682a4a32690",
+    "src/ctxsurgery/models.py": "bf29c72a30682e8958161a3d09122c82ad44a02ae01146aa25fbb9974f0ab4b2",
+    "src/ctxsurgery/providers.py": "2b3d843ad249060b951c027ccda8fa7f4e58c38d8d99813d23edaaf9beaf0fbb",
+    "src/ctxsurgery/report.py": "2c36dcbf88a40ba600a337d86296d43764fd4bba50431d0f6272a5f58399c3cb"
+  },
+  "fixture_sha256": "877f89d9ea8bf12198e6e20d5fa8d25b75b0bb7ea9a06e2bc513ecc678c478cc",
+  "summary_edited": false,
+  "summary_word_target": 90,
+  "limitations": [
+    "Fictional original policy, not a production trace or benchmark performance claim.",
+    "Reuses an existing model summary verbatim; all diagnosis trials are fresh. This is not continuation or pooling of earlier trials. The selected model settings describe diagnosis, not the earlier summary generation.",
+    "Exact JSON checks cover this batch only; strict formatting can also fail.",
+    "Filler matches characters, not tokens. Sequential repeated calls are not a significance test."
+  ],
+  "summary_words": 90,
+  "summary_within_word_target": true,
+  "minimality": "not-established",
+  "repair_ids": [],
+  "diagnosis_calls_used": 6,
+  "diagnosis_max_calls": 18,
+  "preflight_calls_used": 0
+}

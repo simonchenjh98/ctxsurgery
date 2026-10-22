@@ -10,6 +10,7 @@ import ipaddress
 import http.client
 import json
 import math
+import re
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -17,7 +18,23 @@ from dataclasses import dataclass, field
 
 
 class ProviderError(RuntimeError):
-    """A sanitized remote-runner error safe to include in a report."""
+    """A sanitized remote-runner error with a strictly bounded machine code.
+
+    Adapter messages never contain response bodies, headers, or credentials.
+    ``code`` can be logged independently of the human-readable message.
+    """
+
+    def __init__(self, message: str, *, code: str = "provider_error"):
+        allowed = {
+            "provider_error", "invalid_request", "request_limit", "redirect_refused",
+            "connection_failed", "response_limit", "invalid_response", "output_limit",
+        }
+        if not isinstance(code, str) or (
+            code not in allowed and re.fullmatch(r"http_[1-5][0-9]{2}", code) is None
+        ):
+            raise ValueError("Invalid provider error code.")
+        super().__init__(message)
+        self.code = code
 
 
 class _NoRedirect(urllib.request.HTTPRedirectHandler):
@@ -76,6 +93,7 @@ class OpenAICompatibleRunner:
     api_key: str | None = field(default=None, repr=False)
     timeout: float = 30.0
     max_output_tokens: int = 1024
+    reasoning_effort: str | None = None
     _endpoint: str = field(init=False, repr=False)
     _opener: object = field(init=False, repr=False)
 
@@ -91,6 +109,11 @@ class OpenAICompatibleRunner:
             raise ValueError("Timeout must be between 0 and 600 seconds.")
         if type(self.max_output_tokens) is not int or not 1 <= self.max_output_tokens <= 131072:
             raise ValueError("Maximum output tokens must be an integer from 1 to 131072.")
+        if self.reasoning_effort is not None and (
+            not isinstance(self.reasoning_effort, str)
+            or self.reasoning_effort not in ("low", "medium", "high")
+        ):
+            raise ValueError("Reasoning effort must be low, medium, high, or None.")
         if self.api_key is not None and (
             not isinstance(self.api_key, str)
             or any(ord(char) < 33 or ord(char) > 126 for char in self.api_key)
@@ -109,24 +132,28 @@ class OpenAICompatibleRunner:
         from .models import Response
 
         try:
+            body = {
+                "model": self.model,
+                "messages": [
+                    {"role": "system", "content": context},
+                    {"role": "user", "content": task},
+                ],
+                "temperature": 0,
+                "max_tokens": self.max_output_tokens,
+                "stream": False,
+            }
+            # Omit by default: not every compatible endpoint supports this field.
+            if self.reasoning_effort is not None:
+                body["reasoning_effort"] = self.reasoning_effort
             payload = json.dumps(
-                {
-                    "model": self.model,
-                    "messages": [
-                        {"role": "system", "content": context},
-                        {"role": "user", "content": task},
-                    ],
-                    "temperature": 0,
-                    "max_tokens": self.max_output_tokens,
-                    "stream": False,
-                },
+                body,
                 ensure_ascii=False,
                 allow_nan=False,
             ).encode("utf-8")
         except (ValueError, TypeError, UnicodeError):
-            raise ProviderError("Request contains unsupported text or JSON values.") from None
+            raise ProviderError("Request contains unsupported text or JSON values.", code="invalid_request") from None
         if len(payload) > 2 * 1024 * 1024:
-            raise ProviderError("Request exceeds the 2 MiB adapter limit.")
+            raise ProviderError("Request exceeds the 2 MiB adapter limit.", code="request_limit")
         headers = {"Content-Type": "application/json", "Accept": "application/json"}
         if self.api_key:
             headers["Authorization"] = "Bearer " + self.api_key
@@ -137,20 +164,27 @@ class OpenAICompatibleRunner:
         except urllib.error.HTTPError as exc:
             code = exc.code
             exc.close()
+            if type(code) is not int or not 100 <= code <= 599:
+                raise ProviderError("Provider returned an invalid HTTP status; response body omitted.") from None
             if 300 <= code < 400:
-                raise ProviderError("HTTP redirect refused; configure the final endpoint explicitly.") from None
-            raise ProviderError(f"Provider returned HTTP {code}; response body omitted.") from None
+                raise ProviderError("HTTP redirect refused; configure the final endpoint explicitly.", code="redirect_refused") from None
+            raise ProviderError(f"Provider returned HTTP {code}; response body omitted.", code=f"http_{code}") from None
         except (urllib.error.URLError, TimeoutError, OSError, ValueError, http.client.HTTPException):
-            raise ProviderError("Provider connection failed or timed out; details omitted.") from None
+            raise ProviderError("Provider connection failed or timed out; details omitted.", code="connection_failed") from None
         if len(raw) > 4 * 1024 * 1024:
-            raise ProviderError("Provider response exceeds the 4 MiB adapter limit.")
+            raise ProviderError("Provider response exceeds the 4 MiB adapter limit.", code="response_limit")
         try:
             data = json.loads(raw)
-            output = data["choices"][0]["message"]["content"]
+            choice = data["choices"][0]
+            if not isinstance(choice, dict):
+                raise TypeError
+            if choice.get("finish_reason") == "length":
+                raise ProviderError("Provider reached the output token limit; the trial is incomplete.", code="output_limit")
+            output = choice["message"]["content"]
             if not isinstance(output, str):
                 raise TypeError
         except (ValueError, TypeError, KeyError, IndexError, UnicodeError):
-            raise ProviderError("Provider response is not a supported chat-completions JSON response.") from None
+            raise ProviderError("Provider response is not a supported chat-completions JSON response.", code="invalid_response") from None
         usage = data.get("usage")
         safe_usage = None
         if isinstance(usage, dict):

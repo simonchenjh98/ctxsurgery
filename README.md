@@ -18,11 +18,16 @@ before succeeds → after fails → restore missing fragments → compare filler
 
 No dashboard service, database or runtime dependencies. Not a context compressor or a new agent framework.
 
-## Alpha status and next milestone
+## Alpha status and measured examples
 
-The software pipeline is tested; diagnostic effectiveness on real model failures is **not yet established**. The bundled demo is synthetic, and the optional archived example is a static comparison, not a demonstrated causal repair.
+Two [live model experiments](examples/live-context-cases.md) are now recorded, including the incomplete pilots:
 
-The next milestone is one shareable, sanitized real failure case: reproduce the regression, compare original/compacted/restored/filler conditions with explicit assertions, and provide a procedure another developer can rerun. A negative or inconclusive outcome must be reported as such. More features, trace integrations, and broader model claims come after that evidence.
+- **Authored webhook policy:** original and model-generated summary both passed 3/3 trials. No regression was reproduced; no repair is claimed.
+- **Public archived memory, newly authored retrieval task:** original 3/3, rewritten memory 0/3, restored helper 3/3, character-matched filler 0/3. Greedy ablation identified a one-fragment, tested 1-minimal repair in 27 calls.
+
+The retrieval task was deliberately designed after inspecting the missing helper, with three manually chosen fragments. It demonstrates task-local information recovery—not a production incident, an AIME answer repair, blind root-cause discovery, or broad model validation. The bundled offline demo remains synthetic. Full settings, source hashes, rerun commands, negative results, and content-redacted evidence are linked above.
+
+The next milestone is an independently contributed real workflow regression, beyond this targeted retrieval probe. The project remains Alpha; three sequential trials per arm are not a statistical guarantee.
 
 ## Try it in one minute
 
@@ -79,6 +84,8 @@ For a compatible endpoint, use `--base-url https://YOUR_HOST/v1` and optionally 
 
 Loopback endpoints can run without a key. The initial adapter uses the OpenAI-compatible chat-completions shape (`system` context, `user` task, `temperature=0`, `max_tokens`); models requiring different parameters may need an SDK runner. `--max-output-tokens` defaults to 1024 and `--timeout` to 30 seconds. There are no automatic retries or redirect-following.
 
+For endpoints that support it, `--reasoning-effort low` (or `medium` / `high`) explicitly selects that setting; otherwise omit it. A completion truncated with `finish_reason="length"` is an incomplete trial, not evidence of task failure. Do not turn transport errors into a failure score.
+
 ### Inspect or re-render without model calls
 
 ```sh
@@ -98,7 +105,7 @@ python scripts/import_public_example.py --out artifacts/public-example
 ctxsurgery diff artifacts/public-example/before.txt artifacts/public-example/after.txt
 ```
 
-The importer explicitly downloads a fixed public source and verifies its checksum; normal installation, tests and `demo` do not download it. This is **static diff evidence only**: no live rerun, no causal diagnosis, and no demonstrated downstream answer repair. Attribution, exact provenance, content-license boundaries and interpretation limits are documented with the example.
+The importer explicitly downloads a fixed public source and verifies its checksum; normal installation, tests and `demo` do not download it. Import and diff alone provide **static evidence only**. A separate [live retrieval probe](examples/live-context-cases.md#case-2-a-newly-authored-retrieval-probe-on-archived-memories) tests recovery of two function defaults; it does not replay or repair the archive's original AIME task. Attribution, exact provenance, content-license boundaries and interpretation limits are documented with the examples.
 
 ### Evaluators
 

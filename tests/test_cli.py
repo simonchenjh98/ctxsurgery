@@ -1,6 +1,8 @@
 import json
 from pathlib import Path
 
+import pytest
+
 from ctxsurgery.cli import main, redact_result
 from ctxsurgery.demo import demo_case, synthetic_runner
 
@@ -75,6 +77,16 @@ def test_invalid_case_is_exit_two_and_does_not_echo_inputs(tmp_path, capsys):
 
 def test_invalid_options_exit_two(tmp_path):
     assert main(["demo", "--out", str(tmp_path), "--pass-threshold", "nan"]) == 2
+
+
+def test_cli_rejects_unsupported_reasoning_effort_before_loading_case(tmp_path, capsys):
+    with pytest.raises(SystemExit) as captured:
+        main([
+            "diagnose", str(tmp_path / "missing.json"), "--provider", "openai",
+            "--model", "test", "--out", str(tmp_path), "--reasoning-effort", "minimal",
+        ])
+    assert captured.value.code == 2
+    assert "invalid choice" in capsys.readouterr().err
 
 
 def test_diff_and_report_commands(tmp_path, capsys):

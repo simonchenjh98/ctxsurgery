@@ -1,0 +1,510 @@
+{
+  "schema_version": 1,
+  "tool_version": "0.1.0",
+  "created_at": "2026-10-22T12:13:12.799657+00:00",
+  "case_sha256": "41143cfe29e2633edce7e61cd99297db96b0580f482fc8ad8adf0b7f5f407d10",
+  "snapshot_sha256": {
+    "before": "3cc6d3194ea2be7a7baaadc8e086a5895c7b9b10c6165b56261bcf2efb6c4cb9",
+    "after": "1b617ddcd3cc9c8dc863d0eefe196f2810510576ae31be621a280f236d8a2ab8"
+  },
+  "strategy": "ordered-greedy-deletion-with-restart",
+  "case_name": "[REDACTED]",
+  "status": "localized",
+  "summary": "Observed a 1-fragment repair with a failing filler control; every single-fragment ablation fails at the chosen threshold.",
+  "repair_ids": [
+    "hyperbola-helper"
+  ],
+  "repair_experiment_id": "e008",
+  "repair_filler_experiment_id": "e009",
+  "minimality": "1-minimal",
+  "candidates": [
+    {
+      "id": "memory-prefix",
+      "text": "[REDACTED]"
+    },
+    {
+      "id": "hyperbola-helper",
+      "text": "[REDACTED]"
+    },
+    {
+      "id": "memory-suffix",
+      "text": "[REDACTED]"
+    }
+  ],
+  "experiments": [
+    {
+      "id": "e001",
+      "kind": "before",
+      "fragment_ids": [],
+      "context_chars": 5381,
+      "pass_rate": 1.0,
+      "valid": true,
+      "trials": [
+        {
+          "index": 1,
+          "passed": true,
+          "output": "[REDACTED]",
+          "error": null,
+          "elapsed_ms": 4266.0,
+          "usage": {
+            "prompt_tokens": 1394,
+            "completion_tokens": 260,
+            "total_tokens": 1654
+          }
+        },
+        {
+          "index": 2,
+          "passed": true,
+          "output": "[REDACTED]",
+          "error": null,
+          "elapsed_ms": 7031.0,
+          "usage": {
+            "prompt_tokens": 1394,
+            "completion_tokens": 228,
+            "total_tokens": 1622
+          }
+        },
+        {
+          "index": 3,
+          "passed": true,
+          "output": "[REDACTED]",
+          "error": null,
+          "elapsed_ms": 4500.0,
+          "usage": {
+            "prompt_tokens": 1394,
+            "completion_tokens": 163,
+            "total_tokens": 1557
+          }
+        }
+      ]
+    },
+    {
+      "id": "e002",
+      "kind": "after",
+      "fragment_ids": [],
+      "context_chars": 2886,
+      "pass_rate": 0.0,
+      "valid": true,
+      "trials": [
+        {
+          "index": 1,
+          "passed": false,
+          "output": "[REDACTED]",
+          "error": null,
+          "elapsed_ms": 3656.0,
+          "usage": {
+            "prompt_tokens": 793,
+            "completion_tokens": 220,
+            "total_tokens": 1013
+          }
+        },
+        {
+          "index": 2,
+          "passed": false,
+          "output": "[REDACTED]",
+          "error": null,
+          "elapsed_ms": 2406.0,
+          "usage": {
+            "prompt_tokens": 793,
+            "completion_tokens": 111,
+            "total_tokens": 904
+          }
+        },
+        {
+          "index": 3,
+          "passed": false,
+          "output": "[REDACTED]",
+          "error": null,
+          "elapsed_ms": 4688.0,
+          "usage": {
+            "prompt_tokens": 793,
+            "completion_tokens": 111,
+            "total_tokens": 904
+          }
+        }
+      ]
+    },
+    {
+      "id": "e003",
+      "kind": "restore",
+      "fragment_ids": [
+        "memory-prefix",
+        "hyperbola-helper",
+        "memory-suffix"
+      ],
+      "context_chars": 8269,
+      "pass_rate": 1.0,
+      "valid": true,
+      "trials": [
+        {
+          "index": 1,
+          "passed": true,
+          "output": "[REDACTED]",
+          "error": null,
+          "elapsed_ms": 7812.0,
+          "usage": {
+            "prompt_tokens": 2061,
+            "completion_tokens": 147,
+            "total_tokens": 2208
+          }
+        },
+        {
+          "index": 2,
+          "passed": true,
+          "output": "[REDACTED]",
+          "error": null,
+          "elapsed_ms": 4407.0,
+          "usage": {
+            "prompt_tokens": 2061,
+            "completion_tokens": 86,
+            "total_tokens": 2147
+          }
+        },
+        {
+          "index": 3,
+          "passed": true,
+          "output": "[REDACTED]",
+          "error": null,
+          "elapsed_ms": 1797.0,
+          "usage": {
+            "prompt_tokens": 2061,
+            "completion_tokens": 86,
+            "total_tokens": 2147
+          }
+        }
+      ]
+    },
+    {
+      "id": "e004",
+      "kind": "filler",
+      "fragment_ids": [
+        "memory-prefix",
+        "hyperbola-helper",
+        "memory-suffix"
+      ],
+      "context_chars": 8269,
+      "pass_rate": 0.0,
+      "valid": true,
+      "trials": [
+        {
+          "index": 1,
+          "passed": false,
+          "output": "[REDACTED]",
+          "error": null,
+          "elapsed_ms": 1984.0,
+          "usage": {
+            "prompt_tokens": 2544,
+            "completion_tokens": 55,
+            "total_tokens": 2599
+          }
+        },
+        {
+          "index": 2,
+          "passed": false,
+          "output": "[REDACTED]",
+          "error": null,
+          "elapsed_ms": 5156.0,
+          "usage": {
+            "prompt_tokens": 2544,
+            "completion_tokens": 362,
+            "total_tokens": 2906
+          }
+        },
+        {
+          "index": 3,
+          "passed": false,
+          "output": "[REDACTED]",
+          "error": null,
+          "elapsed_ms": 2250.0,
+          "usage": {
+            "prompt_tokens": 2544,
+            "completion_tokens": 100,
+            "total_tokens": 2644
+          }
+        }
+      ]
+    },
+    {
+      "id": "e005",
+      "kind": "restore",
+      "fragment_ids": [
+        "hyperbola-helper",
+        "memory-suffix"
+      ],
+      "context_chars": 7191,
+      "pass_rate": 1.0,
+      "valid": true,
+      "trials": [
+        {
+          "index": 1,
+          "passed": true,
+          "output": "[REDACTED]",
+          "error": null,
+          "elapsed_ms": 2297.0,
+          "usage": {
+            "prompt_tokens": 1794,
+            "completion_tokens": 87,
+            "total_tokens": 1881
+          }
+        },
+        {
+          "index": 2,
+          "passed": true,
+          "output": "[REDACTED]",
+          "error": null,
+          "elapsed_ms": 2766.0,
+          "usage": {
+            "prompt_tokens": 1794,
+            "completion_tokens": 83,
+            "total_tokens": 1877
+          }
+        },
+        {
+          "index": 3,
+          "passed": true,
+          "output": "[REDACTED]",
+          "error": null,
+          "elapsed_ms": 1687.0,
+          "usage": {
+            "prompt_tokens": 1794,
+            "completion_tokens": 82,
+            "total_tokens": 1876
+          }
+        }
+      ]
+    },
+    {
+      "id": "e006",
+      "kind": "filler",
+      "fragment_ids": [
+        "hyperbola-helper",
+        "memory-suffix"
+      ],
+      "context_chars": 7191,
+      "pass_rate": 0.0,
+      "valid": true,
+      "trials": [
+        {
+          "index": 1,
+          "passed": false,
+          "output": "[REDACTED]",
+          "error": null,
+          "elapsed_ms": 17344.0,
+          "usage": {
+            "prompt_tokens": 2195,
+            "completion_tokens": 432,
+            "total_tokens": 2627
+          }
+        },
+        {
+          "index": 2,
+          "passed": false,
+          "output": "[REDACTED]",
+          "error": null,
+          "elapsed_ms": 4468.0,
+          "usage": {
+            "prompt_tokens": 2195,
+            "completion_tokens": 321,
+            "total_tokens": 2516
+          }
+        },
+        {
+          "index": 3,
+          "passed": false,
+          "output": "[REDACTED]",
+          "error": null,
+          "elapsed_ms": 9078.0,
+          "usage": {
+            "prompt_tokens": 2195,
+            "completion_tokens": 55,
+            "total_tokens": 2250
+          }
+        }
+      ]
+    },
+    {
+      "id": "e007",
+      "kind": "restore",
+      "fragment_ids": [
+        "memory-suffix"
+      ],
+      "context_chars": 6218,
+      "pass_rate": 0.0,
+      "valid": true,
+      "trials": [
+        {
+          "index": 1,
+          "passed": false,
+          "output": "[REDACTED]",
+          "error": null,
+          "elapsed_ms": 2219.0,
+          "usage": {
+            "prompt_tokens": 1543,
+            "completion_tokens": 82,
+            "total_tokens": 1625
+          }
+        },
+        {
+          "index": 2,
+          "passed": false,
+          "output": "[REDACTED]",
+          "error": null,
+          "elapsed_ms": 2297.0,
+          "usage": {
+            "prompt_tokens": 1543,
+            "completion_tokens": 65,
+            "total_tokens": 1608
+          }
+        },
+        {
+          "index": 3,
+          "passed": false,
+          "output": "[REDACTED]",
+          "error": null,
+          "elapsed_ms": 2500.0,
+          "usage": {
+            "prompt_tokens": 1543,
+            "completion_tokens": 54,
+            "total_tokens": 1597
+          }
+        }
+      ]
+    },
+    {
+      "id": "e008",
+      "kind": "restore",
+      "fragment_ids": [
+        "hyperbola-helper"
+      ],
+      "context_chars": 3859,
+      "pass_rate": 1.0,
+      "valid": true,
+      "trials": [
+        {
+          "index": 1,
+          "passed": true,
+          "output": "[REDACTED]",
+          "error": null,
+          "elapsed_ms": 5219.0,
+          "usage": {
+            "prompt_tokens": 1044,
+            "completion_tokens": 86,
+            "total_tokens": 1130
+          }
+        },
+        {
+          "index": 2,
+          "passed": true,
+          "output": "[REDACTED]",
+          "error": null,
+          "elapsed_ms": 2015.0,
+          "usage": {
+            "prompt_tokens": 1044,
+            "completion_tokens": 86,
+            "total_tokens": 1130
+          }
+        },
+        {
+          "index": 3,
+          "passed": true,
+          "output": "[REDACTED]",
+          "error": null,
+          "elapsed_ms": 1579.0,
+          "usage": {
+            "prompt_tokens": 1044,
+            "completion_tokens": 76,
+            "total_tokens": 1120
+          }
+        }
+      ]
+    },
+    {
+      "id": "e009",
+      "kind": "filler",
+      "fragment_ids": [
+        "hyperbola-helper"
+      ],
+      "context_chars": 3859,
+      "pass_rate": 0.0,
+      "valid": true,
+      "trials": [
+        {
+          "index": 1,
+          "passed": false,
+          "output": "[REDACTED]",
+          "error": null,
+          "elapsed_ms": 6781.0,
+          "usage": {
+            "prompt_tokens": 1113,
+            "completion_tokens": 55,
+            "total_tokens": 1168
+          }
+        },
+        {
+          "index": 2,
+          "passed": false,
+          "output": "[REDACTED]",
+          "error": null,
+          "elapsed_ms": 4328.0,
+          "usage": {
+            "prompt_tokens": 1113,
+            "completion_tokens": 286,
+            "total_tokens": 1399
+          }
+        },
+        {
+          "index": 3,
+          "passed": false,
+          "output": "[REDACTED]",
+          "error": null,
+          "elapsed_ms": 4031.0,
+          "usage": {
+            "prompt_tokens": 1113,
+            "completion_tokens": 226,
+            "total_tokens": 1339
+          }
+        }
+      ]
+    }
+  ],
+  "checks": [
+    {
+      "removed_id": "hyperbola-helper",
+      "restore_experiment": "e002",
+      "filler_experiment": null,
+      "repair_survives": false
+    }
+  ],
+  "calls_used": 27,
+  "max_calls": 32,
+  "repeats": 3,
+  "pass_threshold": 1.0,
+  "limitations": [
+    "Exploratory retrieval probe selected after inspecting a known omission; not an independently sampled benchmark.",
+    "The task is new. It is not the original AIME question, an AIME answer repair, or a production incident.",
+    "The two archived memories are unchanged. Three coarse fragments were manually defined around the known helper section.",
+    "A repair concerns exact retrieval of two defaults only, not mathematical correctness or general memory quality.",
+    "The model may guess the defaults even when absent; such an after-context pass must not be suppressed.",
+    "Three sequential repeats are descriptive, not a significance test. Filler is character-matched, not token-matched.",
+    "Evidence is specific to this task, evaluator, runner, snapshot, and append-at-end placement.",
+    "Candidates use whitespace-normalized substring matching, not semantic equivalence or contradiction detection.",
+    "Filler matches Python character count and newline positions, not model token count or semantic neutrality.",
+    "A 1-minimal repair means no single retained fragment can be removed at the chosen pass threshold; it is not a globally smallest repair.",
+    "Finite, sequential repeats and adaptive search do not establish statistical significance, reproducibility across seeds, or universal causality.",
+    "Completed arms are reused only within this run; repeats are separate calls, and stateful runners must be reset for each call.",
+    "Full restoration failure does not rule out other repairs, replacement rather than appending, or non-monotonic subsets."
+  ],
+  "elapsed_ms": 118594.0,
+  "run": {
+    "provider": "openai-compatible",
+    "model": "step-5-preview",
+    "synthetic": false,
+    "task_origin": "new_retrieval_probe_on_public_archived_model_memories",
+    "production_incident": false,
+    "original_benchmark_task": false,
+    "reasoning_effort": "low",
+    "max_output_tokens": 16384,
+    "timeout_seconds": 120.0
+  },
+  "redacted": true
+}

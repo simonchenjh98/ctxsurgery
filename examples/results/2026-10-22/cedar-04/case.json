@@ -1,0 +1,74 @@
+{
+  "version": 1,
+  "name": "Cedar webhook handover: authored task, live model summary",
+  "before": [
+    {
+      "id": "policy-scope",
+      "text": "You operate the fictional Cedar webhook adapter. Apply only the policy below, not a vendor's usual HTTP retry rules. Each event gets exactly three fields: terminal (boolean), retry (boolean), delay_seconds (integer). Terminal means the operation is recorded as successfully completed, not merely that processing stops. If retry is false, delay_seconds is always 0. If no rule applies, return terminal=false, retry=false, delay_seconds=0. Do not invent missing policy. Return only the requested JSON object, with no prose or code fences."
+    },
+    {
+      "id": "standard-retry-policy",
+      "text": "A 2xx status is successful: terminal=true, retry=false. A 503 response is retryable only if an idempotency key is present. Such a retry is not terminal. For a permitted 503 retry, use the numeric Retry-After value in seconds, capped at 120 seconds; if absent use 17 seconds. Never convert seconds to milliseconds. For 503 without an idempotency key, do not retry and do not mark successful completion. A 429 response is retryable with a fixed delay of 31 seconds only when an idempotency key is present. Other 4xx statuses are not retryable unless an explicit exception below applies."
+    },
+    {
+      "id": "exception-policy",
+      "text": "Exceptions take precedence over the standard policy. For HTTP 409, the exact error code DUPLICATE means the operation already completed: terminal=true, retry=false. Other 409 codes do not indicate success. For the tenant amber, any otherwise permitted 503 retry uses a fixed delay of 43 seconds, ignoring Retry-After and the missing-header default. This amber override does not grant permission to retry without an idempotency key. For any tenant with the manual_hold flag set, do not retry a 429 or 503 response, and do not mark it terminal. The hold rule takes priority over every retry rule."
+    },
+    {
+      "id": "operational-notes",
+      "text": "Operational notes: Cedar is a training-only integration and no actual webhook will be sent. The team reviews aggregate delivery counts each Friday. Documentation uses green for successful deliveries and gray for pending ones. Event identifiers are labels, not priorities. Payloads may be inspected offline; never send a message or modify a live service while answering a policy question. These documentation conventions do not change any terminal, retry, or delay decision."
+    }
+  ],
+  "after": "Classify events with terminal, retry, delay_seconds. Terminal means completed success. If retry false, delay_seconds 0. Default: false, false, 0. 2xx: terminal=true, retry=false. 503: retry only with idempotency key; delay is Retry-After seconds capped at 120, else 17. Without key, not terminal. 429: retry only with idempotency key; delay 31. Other 4xx: no retry. Exceptions: 409 DUPLICATE is terminal=true, retry=false; other 409 codes not terminal. Tenant amber 503 retries use fixed delay 43, requiring idempotency key. manual_hold blocks 429/503 retries and terminal, overriding all retry rules. Never convert seconds to ms.",
+  "task": "Classify this batch using the supplied Cedar policy. Return one JSON object mapping each event id to exactly terminal, retry, and delay_seconds. Missing idempotency_key means absent; missing manual_hold means false. Do not infer an undocumented policy from HTTP conventions. Events:\n[{\"id\": \"a\", \"status\": 204}, {\"id\": \"b\", \"status\": 409, \"error_code\": \"DUPLICATE\"}, {\"id\": \"c\", \"status\": 409, \"error_code\": \"CONFLICT\"}, {\"id\": \"d\", \"status\": 503, \"idempotency_key\": \"example-d\", \"retry_after\": 300}, {\"id\": \"e\", \"status\": 503}, {\"id\": \"f\", \"status\": 503, \"idempotency_key\": \"example-f\"}, {\"id\": \"g\", \"status\": 503, \"idempotency_key\": \"example-g\", \"tenant\": \"amber\", \"retry_after\": 5}, {\"id\": \"h\", \"status\": 429, \"idempotency_key\": \"example-h\"}, {\"id\": \"i\", \"status\": 503, \"idempotency_key\": \"example-i\", \"tenant\": \"amber\", \"manual_hold\": true}]",
+  "evaluator": {
+    "type": "json",
+    "expected": {
+      "a": {
+        "terminal": true,
+        "retry": false,
+        "delay_seconds": 0
+      },
+      "b": {
+        "terminal": true,
+        "retry": false,
+        "delay_seconds": 0
+      },
+      "c": {
+        "terminal": false,
+        "retry": false,
+        "delay_seconds": 0
+      },
+      "d": {
+        "terminal": false,
+        "retry": true,
+        "delay_seconds": 120
+      },
+      "e": {
+        "terminal": false,
+        "retry": false,
+        "delay_seconds": 0
+      },
+      "f": {
+        "terminal": false,
+        "retry": true,
+        "delay_seconds": 17
+      },
+      "g": {
+        "terminal": false,
+        "retry": true,
+        "delay_seconds": 43
+      },
+      "h": {
+        "terminal": false,
+        "retry": true,
+        "delay_seconds": 31
+      },
+      "i": {
+        "terminal": false,
+        "retry": false,
+        "delay_seconds": 0
+      }
+    }
+  }
+}
