@@ -1,0 +1,45 @@
+{
+  "kind": "new_retrieval_probe_on_public_archived_model_memories",
+  "production_incident": false,
+  "original_benchmark_task": false,
+  "source_url": "https://raw.githubusercontent.com/suzgunmirac/dynamic-cheatsheet/5cfe3c37e8e52b1d858d0f3df46e7f17c50991b9/results/AIME_2024/claude-3-5-sonnet_DynamicCheatsheet_Cumulative.jsonl",
+  "source_commit": "5cfe3c37e8e52b1d858d0f3df46e7f17c50991b9",
+  "source_sha256": "53734028cd3a9b17adc07ae712b9200fffa9d24c58212478d6808d788390edaa",
+  "before_sha256": "3cc6d3194ea2be7a7baaadc8e086a5895c7b9b10c6165b56261bcf2efb6c4cb9",
+  "after_sha256": "1b617ddcd3cc9c8dc863d0eefe196f2810510576ae31be621a280f236d8a2ab8",
+  "source_record_index_zero_based": 28,
+  "task_selection": "targeted_after_inspecting_known_missing_helper",
+  "fragmentation": "three_coarse_groups_around_complete_helper_memory_item",
+  "snapshots_edited": false,
+  "model": "step-5-preview",
+  "base_url": "https://api.stepfun.com/step_plan/v1",
+  "temperature": 0,
+  "reasoning_effort": "low",
+  "max_output_tokens": 16384,
+  "timeout_seconds": 120.0,
+  "max_calls": 32,
+  "repeats": 3,
+  "calls_used": 27,
+  "status": "localized",
+  "limitations": [
+    "Exploratory retrieval probe selected after inspecting a known omission; not an independently sampled benchmark.",
+    "The task is new. It is not the original AIME question, an AIME answer repair, or a production incident.",
+    "The two archived memories are unchanged. Three coarse fragments were manually defined around the known helper section.",
+    "A repair concerns exact retrieval of two defaults only, not mathematical correctness or general memory quality.",
+    "The model may guess the defaults even when absent; such an after-context pass must not be suppressed.",
+    "Three sequential repeats are descriptive, not a significance test. Filler is character-matched, not token-matched."
+  ],
+  "implementation_sha256": {
+    "scripts/run_live_case.py": "4e6c45256d16aa647ffe02e6922ccf8145ae2d20bba96abc92bb2de2e58a13ba",
+    "src/ctxsurgery/engine.py": "5fa80fc32012a59ab8ec721f0e867b82f4f5ca2d75a29472851f976a3f160d63",
+    "src/ctxsurgery/fragments.py": "11037734cf4b941c70d54b05891e7460e7882669e3c81736a71ef682a4a32690",
+    "src/ctxsurgery/models.py": "bf29c72a30682e8958161a3d09122c82ad44a02ae01146aa25fbb9974f0ab4b2",
+    "src/ctxsurgery/providers.py": "2b3d843ad249060b951c027ccda8fa7f4e58c38d8d99813d23edaaf9beaf0fbb",
+    "src/ctxsurgery/report.py": "2c36dcbf88a40ba600a337d86296d43764fd4bba50431d0f6272a5f58399c3cb",
+    "scripts/run_archived_probe.py": "fe65d9efc99f37c1fb03adbfc1ac57dad99aa5fe91820aed6db49df08fec0bcc"
+  },
+  "minimality": "1-minimal",
+  "repair_ids": [
+    "hyperbola-helper"
+  ]
+}

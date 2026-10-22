@@ -106,6 +106,7 @@ def build_parser():
     diagnosis.add_argument("--api-key-env", default="OPENAI_API_KEY", help="Environment variable name, never the secret itself")
     diagnosis.add_argument("--timeout", type=float, default=30.0)
     diagnosis.add_argument("--max-output-tokens", type=int, default=1024)
+    diagnosis.add_argument("--reasoning-effort", choices=("low", "medium", "high"), help="Optional reasoning effort; omitted by default. Requires endpoint support.")
     _add_experiment_arguments(diagnosis)
     report = commands.add_parser("report", help="Render saved result JSON as self-contained HTML")
     report.add_argument("result_json")
@@ -136,8 +137,11 @@ def _run_diagnosis(args):
             api_key=os.environ.get(args.api_key_env),
             timeout=args.timeout,
             max_output_tokens=args.max_output_tokens,
+            reasoning_effort=args.reasoning_effort,
         )
         run = {"provider": "openai-compatible", "model": args.model, "synthetic": False}
+        if args.reasoning_effort is not None:
+            run["reasoning_effort"] = args.reasoning_effort
         print("Live run: case context and task will be sent to the selected endpoint. Calls may incur charges.", file=sys.stderr)
     result = diagnose(
         case,

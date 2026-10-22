@@ -1,0 +1,118 @@
+{
+  "schema_version": 1,
+  "tool_version": "0.1.0",
+  "created_at": "2026-10-21T15:13:16.681160+00:00",
+  "case_sha256": "5bb116696e1f62640a050f6575ddbab070caec8425f2ee51245a7ad28245391c",
+  "snapshot_sha256": {
+    "before": "e3a69e0b1d4629bb11a1074de4e485cd0fed80219a445e4fc7ac97d7ab7af38a",
+    "after": "6daa5996f7c650fc63d4ad1eead0a645d855744151f744397035243a7b073d30"
+  },
+  "strategy": "ordered-greedy-deletion-with-restart",
+  "case_name": "Cedar webhook handover: authored task, live model summary",
+  "status": "runner_error",
+  "summary": "One or more runner calls errored. Errors are not evidence of task failure; diagnosis is incomplete.",
+  "repair_ids": [],
+  "repair_experiment_id": null,
+  "repair_filler_experiment_id": null,
+  "minimality": "not-established",
+  "candidates": [
+    {
+      "id": "policy-scope",
+      "text": "You operate the fictional Cedar webhook adapter. Apply only the policy below, not a vendor's usual HTTP retry rules. Each event gets exactly three fields: terminal (boolean), retry (boolean), delay_seconds (integer). Terminal means the operation is recorded as successfully completed, not merely that processing stops. If retry is false, delay_seconds is always 0. If no rule applies, return terminal=false, retry=false, delay_seconds=0. Do not invent missing policy. Return only the requested JSON object, with no prose or code fences."
+    },
+    {
+      "id": "standard-retry-policy",
+      "text": "A 2xx status is successful: terminal=true, retry=false. A 503 response is retryable only if an idempotency key is present. Such a retry is not terminal. For a permitted 503 retry, use the numeric Retry-After value in seconds, capped at 120 seconds; if absent use 17 seconds. Never convert seconds to milliseconds. For 503 without an idempotency key, do not retry and do not mark successful completion. A 429 response is retryable with a fixed delay of 31 seconds only when an idempotency key is present. Other 4xx statuses are not retryable unless an explicit exception below applies."
+    },
+    {
+      "id": "exception-policy",
+      "text": "Exceptions take precedence over the standard policy. For HTTP 409, the exact error code DUPLICATE means the operation already completed: terminal=true, retry=false. Other 409 codes do not indicate success. For the tenant amber, any otherwise permitted 503 retry uses a fixed delay of 43 seconds, ignoring Retry-After and the missing-header default. This amber override does not grant permission to retry without an idempotency key. For any tenant with the manual_hold flag set, do not retry a 429 or 503 response, and do not mark it terminal. The hold rule takes priority over every retry rule."
+    },
+    {
+      "id": "operational-notes",
+      "text": "Operational notes: Cedar is a training-only integration and no actual webhook will be sent. The team reviews aggregate delivery counts each Friday. Documentation uses green for successful deliveries and gray for pending ones. Event identifiers are labels, not priorities. Payloads may be inspected offline; never send a message or modify a live service while answering a policy question. These documentation conventions do not change any terminal, retry, or delay decision."
+    }
+  ],
+  "experiments": [
+    {
+      "id": "e001",
+      "kind": "before",
+      "fragment_ids": [],
+      "context_chars": 2193,
+      "pass_rate": 0.6666666666666666,
+      "valid": false,
+      "trials": [
+        {
+          "index": 1,
+          "passed": true,
+          "output": "{\"a\":{\"terminal\":true,\"retry\":false,\"delay_seconds\":0},\"b\":{\"terminal\":true,\"retry\":false,\"delay_seconds\":0},\"c\":{\"terminal\":false,\"retry\":false,\"delay_seconds\":0},\"d\":{\"terminal\":false,\"retry\":true,\"delay_seconds\":120},\"e\":{\"terminal\":false,\"retry\":false,\"delay_seconds\":0},\"f\":{\"terminal\":false,\"retry\":true,\"delay_seconds\":17},\"g\":{\"terminal\":false,\"retry\":true,\"delay_seconds\":43},\"h\":{\"terminal\":false,\"retry\":true,\"delay_seconds\":31},\"i\":{\"terminal\":false,\"retry\":false,\"delay_seconds\":0}}",
+          "error": null,
+          "elapsed_ms": 22281.0,
+          "usage": {
+            "prompt_tokens": 778,
+            "completion_tokens": 1131,
+            "total_tokens": 1909
+          }
+        },
+        {
+          "index": 2,
+          "passed": true,
+          "output": "{\"a\":{\"terminal\":true,\"retry\":false,\"delay_seconds\":0},\"b\":{\"terminal\":true,\"retry\":false,\"delay_seconds\":0},\"c\":{\"terminal\":false,\"retry\":false,\"delay_seconds\":0},\"d\":{\"terminal\":false,\"retry\":true,\"delay_seconds\":120},\"e\":{\"terminal\":false,\"retry\":false,\"delay_seconds\":0},\"f\":{\"terminal\":false,\"retry\":true,\"delay_seconds\":17},\"g\":{\"terminal\":false,\"retry\":true,\"delay_seconds\":43},\"h\":{\"terminal\":false,\"retry\":true,\"delay_seconds\":31},\"i\":{\"terminal\":false,\"retry\":false,\"delay_seconds\":0}}",
+          "error": null,
+          "elapsed_ms": 15906.0,
+          "usage": {
+            "prompt_tokens": 778,
+            "completion_tokens": 1238,
+            "total_tokens": 2016
+          }
+        },
+        {
+          "index": 3,
+          "passed": null,
+          "output": null,
+          "error": "Runner raised ProviderError; exception message omitted for privacy.",
+          "elapsed_ms": 5016.0,
+          "usage": null
+        }
+      ]
+    }
+  ],
+  "checks": [],
+  "calls_used": 5,
+  "max_calls": 46,
+  "repeats": 3,
+  "pass_threshold": 1.0,
+  "limitations": [
+    "Fictional original policy, not a production trace or benchmark performance claim.",
+    "One predeclared summary request with a 90-word target; no summary selection or manual deletion.",
+    "Exact JSON checks cover this batch only; strict formatting can also fail.",
+    "Filler matches characters, not tokens. Sequential repeated calls are not a significance test.",
+    "Task provenance: this is a human-authored fictional engineering policy with live model observations, not a production incident or an independently collected benchmark.",
+    "Summary length: 90 whitespace-delimited words; the 90-word target was met. The model output was used unchanged, including any length violation.",
+    "Budget accounting: 5/46 total calls, including 2 preflight calls (connectivity and compaction) and 3/44 diagnosis calls. The trial ledger below contains diagnosis calls; calls.json contains every call.",
+    "The displayed elapsed time covers the full experiment; diagnosis_elapsed_ms in report.json preserves the engine-only timing.",
+    "Evidence is specific to this task, evaluator, runner, snapshot, and append-at-end placement.",
+    "Candidates use whitespace-normalized substring matching, not semantic equivalence or contradiction detection.",
+    "Filler matches Python character count and newline positions, not model token count or semantic neutrality.",
+    "A 1-minimal repair means no single retained fragment can be removed at the chosen pass threshold; it is not a globally smallest repair.",
+    "Finite, sequential repeats and adaptive search do not establish statistical significance, reproducibility across seeds, or universal causality.",
+    "Completed arms are reused only within this run; repeats are separate calls, and stateful runners must be reset for each call.",
+    "Full restoration failure does not rule out other repairs, replacement rather than appending, or non-monotonic subsets."
+  ],
+  "elapsed_ms": 136344.0,
+  "diagnosis_calls_used": 3,
+  "diagnosis_max_calls": 44,
+  "preflight_calls_used": 2,
+  "diagnosis_elapsed_ms": 43203.0,
+  "run": {
+    "provider": "openai-compatible",
+    "model": "step-5-preview",
+    "synthetic": false,
+    "task_origin": "authored",
+    "production_incident": false,
+    "summary_words": 90,
+    "summary_word_target": 90,
+    "summary_within_word_target": true,
+    "summary_edited": false
+  }
+}

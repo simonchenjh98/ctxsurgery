@@ -1,9 +1,10 @@
 # Public example: a memory replaced by placeholders
 
 This optional example imports two **archived, real model-produced memory
-snapshots** from the public Dynamic Cheatsheet repository. It demonstrates a
-static context diff, not a live model run or a causal diagnosis. Installation,
-tests, and the offline demo do not download this source automatically.
+snapshots** from the public Dynamic Cheatsheet repository. The importer and
+diff are static, not a live run or diagnosis. A separate [live retrieval probe](live-context-cases.md)
+uses these snapshots for a newly authored task; it does not replay the original
+benchmark. Installation, tests, and the offline demo do not download this source automatically.
 
 ## Import and inspect
 
@@ -55,11 +56,12 @@ Expected UTF-8 snapshot SHA256 hashes (no added trailing newline):
 
 Missing text is not necessarily useful or correct. Lexical change is not proof
 of semantic loss, and this archived update does not establish a downstream
-performance effect. No restoration/filler/ablation run is supplied for this
-case. In particular, this is **not** evidence that restoring a fragment fixes
-an AIME answer, and it is not an estimate of how often current models lose
-context. Use an explicit task, evaluator, and controlled reruns to investigate
-those questions.
+performance effect. The separate [live probe](live-context-cases.md) supplies
+restoration/filler/ablation observations for a new, deliberately targeted
+function-default retrieval task only. In particular, this is **not** evidence
+that restoring a fragment fixes an AIME answer, and it is not an estimate of
+how often current models lose context. Broader claims need their own explicit
+tasks, evaluators, and controlled reruns.
 
 ## License and distribution boundary
 

@@ -1,0 +1,22 @@
+{
+  "kind": "authored_engineering_task_with_live_model_observations",
+  "production_incident": false,
+  "model": "step-5-preview",
+  "base_url": "https://api.stepfun.com/step_plan/v1",
+  "max_calls": 48,
+  "repeats": 3,
+  "temperature": 0,
+  "status": "empty_summary",
+  "calls_used": 2,
+  "max_output_tokens": 4096,
+  "timeout_seconds": 60.0,
+  "fixture_sha256": "877f89d9ea8bf12198e6e20d5fa8d25b75b0bb7ea9a06e2bc513ecc678c478cc",
+  "summary_edited": false,
+  "summary_word_target": 90,
+  "limitations": [
+    "Fictional original policy, not a production trace or benchmark performance claim.",
+    "One predeclared 90-word summary; no summary selection or manual deletion.",
+    "Exact JSON checks cover this batch only; strict formatting can also fail.",
+    "Filler matches characters, not tokens. Sequential repeated calls are not a significance test."
+  ]
+}

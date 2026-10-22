@@ -92,6 +92,45 @@ def test_invalid_options(kwargs):
         OpenAICompatibleRunner(**options)
 
 
+@pytest.mark.parametrize("effort", ["", "none", "LOW", "minimal", "xhigh", True, 1, [], {}])
+def test_rejects_invalid_reasoning_effort(effort):
+    with pytest.raises(ValueError, match="Reasoning effort"):
+        OpenAICompatibleRunner("test", "http://localhost/v1", reasoning_effort=effort)
+
+
+@pytest.mark.parametrize("effort", [None, "low", "medium", "high"])
+def test_reasoning_effort_is_optional_and_forwarded(effort):
+    with server() as (url, state):
+        OpenAICompatibleRunner("test", url, reasoning_effort=effort)("context", "task")
+    body = state["requests"][0]["body"]
+    expected = {
+        "model": "test",
+        "messages": [
+            {"role": "system", "content": "context"},
+            {"role": "user", "content": "task"},
+        ],
+        "temperature": 0,
+        "max_tokens": 1024,
+        "stream": False,
+    }
+    if effort is not None:
+        expected["reasoning_effort"] = effort
+    assert body == expected
+
+
+@pytest.mark.parametrize("code", ["PRIVATE", "http_099", "http_600", "http_429\nPRIVATE", None, 429, []])
+def test_error_code_rejects_unknown_or_unsafe_values(code):
+    with pytest.raises(ValueError, match="Invalid provider error code") as captured:
+        ProviderError("sanitized message", code=code)
+    assert "PRIVATE" not in str(captured.value)
+
+
+def test_provider_error_default_code_preserves_existing_constructor():
+    error = ProviderError("sanitized message")
+    assert str(error) == "sanitized message"
+    assert error.code == "provider_error"
+
+
 def test_request_and_usage_are_correct():
     with server() as (url, state):
         runner = OpenAICompatibleRunner("local-test", url, "a-test-key")
@@ -121,13 +160,15 @@ def test_http_errors_never_echo_body_and_never_retry(status):
     assert str(status) in str(captured.value)
     assert "PRIVATE" not in str(captured.value)
     assert "API_KEY" not in str(captured.value)
+    assert captured.value.code == f"http_{status}"
     assert len(state["requests"]) == 1
 
 
 def test_redirect_does_not_forward_credentials():
     with server(status=307, redirect=True) as (url, state):
-        with pytest.raises(ProviderError, match="redirect refused"):
+        with pytest.raises(ProviderError, match="redirect refused") as captured:
             OpenAICompatibleRunner("test", url, "secret")("context", "task")
+    assert captured.value.code == "redirect_refused"
     assert len(state["requests"]) == 1
 
 
@@ -137,6 +178,7 @@ def test_invalid_responses_are_sanitized(body):
         with pytest.raises(ProviderError, match="not a supported") as captured:
             OpenAICompatibleRunner("test", url)("context", "task")
     assert "PRIVATE" not in str(captured.value)
+    assert captured.value.code == "invalid_response"
 
 
 def test_usage_whitelist_rejects_secrets_and_invalid_counts():
@@ -148,33 +190,50 @@ def test_usage_whitelist_rejects_secrets_and_invalid_counts():
     assert response.usage == {"total_tokens": 3}
 
 
+@pytest.mark.parametrize("content", ["", "a superficially correct but truncated answer"])
+def test_truncated_completion_is_an_error_not_task_evidence(content):
+    with server(body={
+        "choices": [{"finish_reason": "length", "message": {"content": content}}],
+        "usage": {"completion_tokens": 4096},
+    }) as (url, state):
+        with pytest.raises(ProviderError, match="output token limit") as captured:
+            OpenAICompatibleRunner("test", url)("context", "task")
+    assert captured.value.code == "output_limit"
+    assert len(state["requests"]) == 1
+
+
 def test_oversize_request_makes_no_call():
     with server() as (url, state):
-        with pytest.raises(ProviderError, match="Request exceeds"):
+        with pytest.raises(ProviderError, match="Request exceeds") as captured:
             OpenAICompatibleRunner("test", url)("x" * (2 * 1024 * 1024), "task")
+    assert captured.value.code == "request_limit"
     assert not state["requests"]
 
 
 def test_oversize_response_is_rejected():
     with server(body=b"x" * (4 * 1024 * 1024 + 1)) as (url, _):
-        with pytest.raises(ProviderError, match="response exceeds"):
+        with pytest.raises(ProviderError, match="response exceeds") as captured:
             OpenAICompatibleRunner("test", url)("context", "task")
+    assert captured.value.code == "response_limit"
 
 
 def test_timeout_is_sanitized():
     with server(delay=0.2) as (url, _):
-        with pytest.raises(ProviderError, match="timed out"):
+        with pytest.raises(ProviderError, match="timed out") as captured:
             OpenAICompatibleRunner("test", url, timeout=0.01)("PRIVATE", "task")
+    assert captured.value.code == "connection_failed"
 
 
 def test_invalid_unicode_is_sanitized():
     with server() as (url, state):
-        with pytest.raises(ProviderError, match="unsupported text"):
+        with pytest.raises(ProviderError, match="unsupported text") as captured:
             OpenAICompatibleRunner("test", url)("\ud800", "task")
+    assert captured.value.code == "invalid_request"
     assert not state["requests"]
 
 
-def test_cli_diagnosis_through_real_loopback_http(tmp_path, monkeypatch):
+@pytest.mark.parametrize("effort", [None, "low", "medium", "high"])
+def test_cli_diagnosis_through_real_loopback_http(tmp_path, monkeypatch, effort):
     from ctxsurgery.cli import main
     from ctxsurgery.demo import demo_case, synthetic_runner
 
@@ -189,11 +248,14 @@ def test_cli_diagnosis_through_real_loopback_http(tmp_path, monkeypatch):
     case_path.write_text(json.dumps(demo_case().to_dict()), encoding="utf-8")
     monkeypatch.delenv("CTXSURGERY_TEST_KEY", raising=False)
     with server(responder=responder) as (url, state):
-        code = main([
+        arguments = [
             "diagnose", str(case_path), "--provider", "openai", "--model", "test-config-interpreter",
             "--base-url", url, "--api-key-env", "CTXSURGERY_TEST_KEY", "--out", str(tmp_path / "report"),
             "--repeats", "1",
-        ])
+        ]
+        if effort is not None:
+            arguments.extend(["--reasoning-effort", effort])
+        code = main(arguments)
     assert code == 0
     result = json.loads((tmp_path / "report" / "report.json").read_text(encoding="utf-8"))
     assert result["status"] == "localized"
@@ -201,6 +263,12 @@ def test_cli_diagnosis_through_real_loopback_http(tmp_path, monkeypatch):
     assert result["calls_used"] == len(state["requests"])
     assert result["run"]["model"] == "test-config-interpreter"
     assert all(request["authorization"] is None for request in state["requests"])
+    if effort is None:
+        assert "reasoning_effort" not in result["run"]
+        assert all("reasoning_effort" not in request["body"] for request in state["requests"])
+    else:
+        assert result["run"]["reasoning_effort"] == effort
+        assert all(request["body"]["reasoning_effort"] == effort for request in state["requests"])
 
 
 def test_cli_runner_failure_saves_evidence_and_exits_three(tmp_path, monkeypatch):
